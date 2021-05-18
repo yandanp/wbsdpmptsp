@@ -21,6 +21,8 @@ Route::prefix('/')->group(function(){
 
     Route::get('/', "Frontend\HomeController@index");   
     Route::get('/statistik', "Frontend\HomeController@statistik");
+    Route::get('/statistik/getData', "Frontend\HomeController@statistik_pelanggaran");
+    Route::get('/statistik/getDataStatus', "Frontend\HomeController@status_pengaduan");
     Route::get('/faq', "Frontend\HomeController@faq");
 
 });

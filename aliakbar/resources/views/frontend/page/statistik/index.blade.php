@@ -8,11 +8,10 @@
 <link href="{{ asset('assets/frontend/wbs/css/style.css')}}" rel="stylesheet">
 <link href="{{ asset('assets/frontend/wbs/css/responsive.css')}}" rel="stylesheet">
 <!--Color Switcher Mockup-->
-<link href="css/color-switcher-design.css" rel="stylesheet">
+{{-- <link href="css/color-switcher-design.css" rel="stylesheet"> --}}
 
 <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
 <link rel="icon" href="{{ asset('assets/backend/images/logo-letter.png') }}">
-
 
 <!-- Responsive -->
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -104,11 +103,11 @@
         <div class="auto-container">
             <!-- Sec Title -->
             <div class="sec-title">
-                <span class="title">FAQ'S</span>
-                <h2>Petanyaan <span>Umum</span></h2>
+                <span class="title">STATISTIK</span>
+                <h2>Data <span>Statistik</span></h2>
             </div>
 
-            <div class="row clearfix">
+            {{-- <div class="row clearfix">
                 <!-- Content Column -->
                 <div class="content-column col-lg-12 col-md-12 col-sm-12">
                     <div class="inner-column">
@@ -128,6 +127,28 @@
                     </div>
                 </div>
 
+            </div> --}}            
+            <div class="row mt">
+                <div class="col-lg-6">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <i class="fa fa-folder-open ico-left"></i> Laporan Berdasarkan Jenis Pelanggaran
+                        </div>
+                        <div class="panel-body">
+                            <div class="" id="getByJenisPelanggaran"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <i class="fa fa-info-circle ico-left"></i> Laporan Berdasarkan Status
+                        </div>
+                        <div class="panel-body">
+                            <div class="" id="getByStatusPengaduan"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -280,7 +301,109 @@
 <script src="{{ asset('assets/frontend/wbs/js/owl.js')}}"></script>
 <script src="{{ asset('assets/frontend/wbs/js/wow.js')}}"></script>
 <script src="{{ asset('assets/frontend/wbs/js/script.js')}}"></script>
+<script src="https://code.highcharts.com/highcharts.src.js"></script>
 <!-- Color Setting -->
 <script src="{{ asset('assets/frontend/wbs/js/color-settings.js')}}"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        load_chart0('#getByJenisPelanggaran');
+        load_chart1('#getByStatusPengaduan');
+      });  
+  
+    function load_chart0(id) {
+       $.ajax({
+            dataType: "json",
+            // type: "GET",
+            global: false,
+            url: "{{ url('statistik/getData') }}",
+            // beforeSend: function(xhr) {
+            //             },
+            success: function(json) {
+              // console.log(json)
+                        $(id).highcharts({
+                          chart: {
+                              type: 'column',
+                          },
+                          title: {
+                              text: ''
+                          },
+                          xAxis: {
+                              categories: ['Jenis Pelanggaran'],
+                          },
+                          yAxis: {
+                              min: 0,
+                              title: {
+                                  text: 'Jumlah Laporan',
+                              },
+                              labels: {
+                                  overflow: 'justify'
+                              }
+                          },
+                          plotOptions: {
+                              column: {
+                                  dataLabels: {
+                                      enabled: true
+                                  }
+                              }
+                          },
+                          credits: {
+                              enabled: false
+                          },
+                          series: json
+                        });
+                      },   
+            error: function (ajaxOptions, thrownError) {
+            },       
+          });
+    }
+    
+    function load_chart1(id) {
+       $.ajax({
+            dataType: "json",
+            // type: "GET",
+            global: false,
+            url: "{{ url('statistik/getDataStatus') }}",
+            // beforeSend: function(xhr) {
+            //             },
+            success: function(json) {
+              // console.log(json)
+                        $(id).highcharts({
+                            chart: {
+                                type: 'pie'
+                            },
+                            title: {
+                                text: '',
+                                style: {
+                                display: 'none',
+                                }
+                            },
+                            plotOptions: {
+                                pie: {
+                                    allowPointSelect: true,
+                                    cursor: 'pointer',
+                                    dataLabels: {
+                                        enabled: true,
+                                        formatter: function() {
+                                            return this.y/*+' Laporan'*/;
+                                        },
+                                    },
+                                    showInLegend: true
+                                }
+                            },                    
+                            credits: {
+                                enabled: false
+                            },
+                            series: [{                               
+                                name: 'Jumlah',
+                                colorByPoint: true,
+                                data: json
+                            }]      
+                        });
+                      },   
+            error: function (ajaxOptions, thrownError) {
+            },       
+          });
+    }
+</script>
 </body>
 </html>

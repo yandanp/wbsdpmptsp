@@ -10,6 +10,9 @@ use App\Models\slider;
 use App\Models\Faq;
 use DataTables;
 use Carbon\Carbon;
+use App\Models\jenisPelanggaran;
+use App\Models\pengaduan;
+use App\Models\status;
 
 
 
@@ -74,6 +77,66 @@ class HomeController extends Controller
     {
         $this->data['faq'] = $this->faqClass->orderBy('id','asc')->get();
         return view('frontend.page.faqs.index',$this->data);
+    }
+
+    public function statistik_pelanggaran()
+    {
+        $pelanggaranName = jenisPelanggaran::orderBy('id', 'ASC')->get();
+        for ($i=1; $i <= count($pelanggaranName); $i++) { 
+            $pengaduan[$i] = pengaduan::where('jenis_pelanggaran_id', $i)
+                ->get();            
+        }
+        // dd($pengaduan);        
+
+        $dataArray = [ ];
+		$pelanggaranNamesArray = [ ];        
+
+        foreach ( $pelanggaranName as $kb )
+			array_push ( $pelanggaranNamesArray, $kb->nama );
+
+        foreach ( $pengaduan as $detail )
+            array_push ( $dataArray,  count($detail));
+
+        for($i = 0; $i < count ( $pengaduan ); $i++) {
+            $chartArray  []= array (
+                "name" => $pelanggaranNamesArray [$i],
+                "data" => [$dataArray [$i] ]
+            );
+        }
+		// $data['name'] = $pelanggaranNamesArray;
+        // dd(json_encode($data));
+        // dd($chartArray);
+        return json_encode($chartArray);
+    }
+    
+    public function status_pengaduan()
+    {
+        $statusName = status::orderBy('id', 'ASC')->get();
+        for ($i=1; $i <= count($statusName); $i++) { 
+            $pengaduan[$i] = pengaduan::where('status_id', $i)
+                ->get();            
+        }
+        // dd($pengaduan);        
+
+        $dataArray = [ ];
+		$statusNamesArray = [ ];        
+
+        foreach ( $statusName as $kb )
+			array_push ( $statusNamesArray, $kb->nama );
+
+        foreach ( $pengaduan as $detail )
+            array_push ( $dataArray,  count($detail));
+
+        for($i = 0; $i < count ( $pengaduan ); $i++) {
+            $chartArray  []= array (
+                "name" => $statusNamesArray [$i],
+                "y" => $dataArray [$i]
+            );
+        }
+		// $data['name'] = $statusNamesArray;
+        // dd(json_encode($data));
+        // dd($chartArray);
+        return json_encode($chartArray);
     }
 
 
